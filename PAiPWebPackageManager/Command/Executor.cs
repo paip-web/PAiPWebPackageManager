@@ -198,7 +198,18 @@ public static class Executor
         return ExecuteCommandAsAdmin(PlatformShell.GetBasicShellCommand(), $"{PlatformShell.GetBasicShellArguments()} {escapedCommand}");
     }
     
-    
+    /// <summary>
+    /// Execute Command using PowerShell
+    /// </summary>
+    /// <param name="command">
+    /// Command to Execute
+    /// </param>
+    /// <returns>
+    /// - outputObject: Output Object
+    /// - exitCode: Exit Code of command
+    /// - Streams: Streams of STDOUT, STDERR
+    /// - HadErrors: Does it had errors
+    /// </returns>
     public static (Collection<PSObject> outputObject, int exitCode, PSDataStreams Streams, bool HadErrors) ExecuteCommandUsingPowerShell(string command)
     {
         var pwsh = PowerShell.Create();

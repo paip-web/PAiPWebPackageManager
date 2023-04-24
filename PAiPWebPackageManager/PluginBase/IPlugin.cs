@@ -1,6 +1,6 @@
 namespace PAiPWebPackageManager.PluginBase;
 
-public interface PluginInterface
+public interface IPlugin
 {
     #region Supported
     /// <summary>
@@ -182,5 +182,13 @@ public interface PluginInterface
     /// If package manager got installed
     /// </returns>
     public bool InstallPackageManager();
+    #endregion
+    
+    #region FUTURE:
+    #if false
+    public void SearchPackage(string package);
+    public void SearchPackage(PackageUri packageUri);
+    public List<string> GetListOfInstalledPackages();
+    #endif
     #endregion
 }
