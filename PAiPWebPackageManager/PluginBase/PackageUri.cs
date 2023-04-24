@@ -2,7 +2,7 @@ namespace PAiPWebPackageManager.PluginBase;
 
 public class PackageUri
 {
-    private string _packageUri;
+    private readonly string _packageUri;
 
     public PackageUri(string packageUri)
     {
@@ -16,20 +16,13 @@ public class PackageUri
 
     public string? GetManagerUri()
     {
-        if (_packageUri.Contains(":"))
-        {
-            return _packageUri.Split(":")[0];
-        }
-        else
-        {
-            return null;
-        }
+        return !_packageUri.Contains(":") ? null : _packageUri.Split(":")[0];
     }
 
     public string GetPackage()
     {
         var ignoreString = $"{GetManagerUri()}:";
-        int index = _packageUri.IndexOf(ignoreString, StringComparison.Ordinal);
+        var index = _packageUri.IndexOf(ignoreString, StringComparison.Ordinal);
         return (index < 0) ? _packageUri : _packageUri.Remove(index, ignoreString.Length);
     }
 }
