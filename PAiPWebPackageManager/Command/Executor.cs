@@ -210,15 +210,13 @@ public static class Executor
     /// - Streams: Streams of STDOUT, STDERR
     /// - HadErrors: Does it had errors
     /// </returns>
-    public static (Collection<PSObject> outputObject, int exitCode, PSDataStreams Streams, bool HadErrors) ExecuteCommandUsingPowerShell(string command)
+    public static (Collection<PSObject> outputObject, PSDataStreams Streams, bool HadErrors) ExecuteCommandUsingPowerShell(string command)
     {
         var pwsh = PowerShell.Create();
         pwsh.AddScript(command);
-        pwsh.AddStatement().AddCommand("""echo $LASTEXITCODE""");
         var outputObject = pwsh.Invoke();
-        var exitCode = int.Parse(outputObject[^1].BaseObject.ToString()!.ToString());
         
-        return (outputObject, exitCode, pwsh.Streams, pwsh.HadErrors);
+        return (outputObject, pwsh.Streams, pwsh.HadErrors);
     }
     
     /// <summary>

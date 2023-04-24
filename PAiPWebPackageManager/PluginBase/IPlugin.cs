@@ -2,6 +2,16 @@ namespace PAiPWebPackageManager.PluginBase;
 
 public interface IPlugin
 {
+    #region Metadata
+    /// <summary>
+    /// Get Plugin Metadata
+    /// </summary>
+    /// <returns>
+    /// Get Plugin Metadata
+    /// </returns>
+    public PluginInformationRecord GetPluginMetadata();
+    #endregion
+    
     #region Supported
     /// <summary>
     /// Check if the plugin is supported on the current platform and current system
@@ -161,7 +171,7 @@ public interface IPlugin
     /// <exception cref="NotImplementedException">
     /// This exception is thrown if package manager doesn't support removing package repositories
     /// </exception>
-    public bool RemovePackageRepositoryToDatabase(string repository);
+    public bool RemovePackageRepositoryFromDatabase(string repository);
     #endregion
     
     #region Mass Update
