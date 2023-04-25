@@ -65,15 +65,16 @@ public record PluginInformationRecord
             : $"{PluginCategory} - {PluginName}";
     #endregion
 
-    protected static (string command, bool error) RequireOneOfTheseCommands(List<string> commands)
+    public static (string command, bool error) RequireOneOfTheseCommands(IEnumerable<string> commands)
     {
-        if (commands.Count < 1)
+        var cmds = new List<string>(commands);
+        if (cmds.Count < 1)
         {
             throw new ArgumentException("Commands is empty");
         }
         
-        var availableCommands = commands.Where(Executor.IsCommandAvailable).ToArray();
-        return availableCommands.Length == 0 ? (commands.First(), true) : (availableCommands.First(), false);
+        var availableCommands = cmds.Where(Executor.IsCommandAvailable).ToArray();
+        return availableCommands.Length == 0 ? (cmds.First(), true) : (availableCommands.First(), false);
     }
 
     public bool CheckRequirements(bool ignoreCommands = false)

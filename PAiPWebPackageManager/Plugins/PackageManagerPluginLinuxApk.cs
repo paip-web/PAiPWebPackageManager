@@ -12,7 +12,7 @@ public class PackageManagerPluginLinuxApk: PluginBaseClass
         DoesNotWorkWithAdmin = false,
         IsAdminNeeded = true,
         RequiredCommands = new List<string>(new []{"apk"}),
-        SupportedPlatforms = { OSPlatform.Linux},
+        SupportedPlatforms = { OSPlatform.Linux },
     };
     
     public override bool IsSupported()
@@ -32,7 +32,10 @@ public class PackageManagerPluginLinuxApk: PluginBaseClass
 
     public override bool IsPackageInstalled(PackageUri package)
     {
-        throw new NotImplementedException();
+        return CheckExitCode(
+            ExecuteCommand($"apk info -e {package.GetPackage()}"),
+            new[] { 0 }
+        );
     }
 
     public override bool InstallPackage(PackageUri packageName)
