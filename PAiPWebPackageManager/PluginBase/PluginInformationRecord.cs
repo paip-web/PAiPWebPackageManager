@@ -3,6 +3,7 @@ using PAiPWebPackageManager.Command;
 
 namespace PAiPWebPackageManager.PluginBase;
 
+// ReSharper disable InconsistentNaming
 public enum PluginCategoryEnum
 {
     Null,
@@ -26,6 +27,7 @@ public enum PluginCategoryEnum
     // PAiP Web Package Manager
     PAiP_Web_Package_Manager,
 }
+// ReSharper enable InconsistentNaming
 
 public record PluginInformationRecord
 {
@@ -37,6 +39,10 @@ public record PluginInformationRecord
     /// If true this plugin can't work on Administrator at all
     /// </summary>
     public bool DoesNotWorkWithAdmin = false;
+    /// <summary>
+    /// Is Windows Subsystem for Linux supported?
+    /// </summary>
+    public bool IsWslSupported = true;
     /// <summary>
     /// Supported Platforms of this plugin
     /// </summary>
@@ -79,6 +85,12 @@ public record PluginInformationRecord
 
     public bool CheckRequirements(bool ignoreCommands = false)
     {
+        if (!IsWslSupported && Executor.IsWsl())
+        {
+            // WSL is not supported
+            return false;
+        }
+        
         if (IsAdminNeeded && Executor.IsAdmin() == false)
         {
             // Administrator is needed
