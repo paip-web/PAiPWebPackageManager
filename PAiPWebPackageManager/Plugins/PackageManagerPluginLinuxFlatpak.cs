@@ -1,5 +1,4 @@
 ﻿using System.Runtime.InteropServices;
-using AutoConfigurator.Library.Blueprints.PackageManagerPlugins.Plugins;
 using PAiPWebPackageManager.PluginBase;
 using Spectre.Console;
 
@@ -102,7 +101,7 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
 
     public override bool InstallPackageManager()
     {
-        var flatpakPackageManagers = new List<PluginBaseClass>(new[]
+        var flatpakPackageManagers = new List<PluginBaseClass>(new PluginBaseClass[]
             {
                 new PackageManagerPluginLinuxApt(),
                 new PackageManagerPluginLinuxDnf(),
