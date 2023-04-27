@@ -12,7 +12,7 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_Linux,
         PluginName = "Flatpak",
         DoesNotWorkWithAdmin = false,
-        IsAdminNeeded = true,
+        IsAdminNeeded = false,
         RequiredCommands = new List<string>(new []{"flatpak"}),
         SupportedPlatforms = { OSPlatform.Linux },
     };
