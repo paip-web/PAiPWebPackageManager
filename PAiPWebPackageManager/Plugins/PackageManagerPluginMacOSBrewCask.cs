@@ -3,16 +3,16 @@ using PAiPWebPackageManager.PluginBase;
 
 namespace PAiPWebPackageManager.Plugins;
 
-public class PackageManagerPluginBrew: PluginBaseClass
+public class PackageManagerPluginMacOSBrewCask: PluginBaseClass
 {
     protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
     {
-        PluginCategoryType = PluginCategoryEnum.Operating_System_x_LinuxAndMacOS,
+        PluginCategoryType = PluginCategoryEnum.Operating_System_x_MacOS,
         PluginName = "Brew",
         DoesNotWorkWithAdmin = true,
         IsAdminNeeded = false,
         RequiredCommands = new List<string>(new []{"brew"}),
-        SupportedPlatforms = { OSPlatform.Linux, OSPlatform.OSX},
+        SupportedPlatforms = { OSPlatform.OSX},
     };
     
     public override bool IsSupported()
@@ -35,7 +35,7 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool IsPackageInstalled(PackageUri package)
     {
         return CheckExitCode(
-            ExecuteCommand($"brew ls --versions {package.GetPackage()}"),
+            ExecuteCommand($"brew ls --versions --cask {package.GetPackage()}"),
             new[] { 0 }
         );
     }
@@ -43,7 +43,7 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool InstallPackage(PackageUri packageName)
     {
         return CheckExitCode(
-            ExecuteCommand($"brew install {packageName.GetPackage()}"),
+            ExecuteCommand($"brew install --cask {packageName.GetPackage()}"),
             new[] { 0 }
         );
     }
@@ -51,7 +51,7 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool UpdatePackage(PackageUri packageName)
     {
         return CheckExitCode(
-            ExecuteCommand($"brew upgrade {packageName.GetPackage()}"),
+            ExecuteCommand($"brew upgrade --cask {packageName.GetPackage()}"),
             new[] { 0 }
         );
     }
@@ -59,7 +59,7 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool UninstallPackage(PackageUri packageName)
     {
         return CheckExitCode(
-            ExecuteCommand($"brew uninstall {packageName.GetPackage()}"),
+            ExecuteCommand($"brew uninstall --cask {packageName.GetPackage()}"),
             new[] { 0 }
         );
     }
@@ -67,7 +67,7 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool UpdatePackageDatabase()
     {
         return CheckExitCode(
-            ExecuteCommand("brew update"),
+            ExecuteCommand("brew update --cask"),
             new[] { 0 }
         );
     }
@@ -75,10 +75,10 @@ public class PackageManagerPluginBrew: PluginBaseClass
     public override bool UpdateAllCurrentPackages()
     {
         return CheckExitCode(
-            ExecuteCommand("brew update"),
+            ExecuteCommand("brew update --cask"),
             new[] { 0 }
         ) && CheckExitCode(
-            ExecuteCommand("brew upgrade"),
+            ExecuteCommand("brew upgrade --cask"),
             new[] { 0 }
         );
     }
