@@ -9,7 +9,7 @@ public class PackageManagerPluginLinuxYum: PluginBaseClass
     protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_Linux,
-        PluginName = "Apk",
+        PluginName = "Yum",
         DoesNotWorkWithAdmin = false,
         IsAdminNeeded = true,
         RequiredCommands = new List<string>(new []{"yum", "yum-config-manager"}),

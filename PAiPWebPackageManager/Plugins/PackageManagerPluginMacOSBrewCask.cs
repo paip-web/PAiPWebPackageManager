@@ -8,7 +8,7 @@ public class PackageManagerPluginMacOSBrewCask: PluginBaseClass
     protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_MacOS,
-        PluginName = "Brew",
+        PluginName = "BrewCask",
         DoesNotWorkWithAdmin = true,
         IsAdminNeeded = false,
         RequiredCommands = new List<string>(new []{"brew"}),

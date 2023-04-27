@@ -23,7 +23,7 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
 
     public override bool IsInstallSupported()
     {
-        return GetSupportedPackageManagers().Count > 0;
+        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().Count > 0;
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)

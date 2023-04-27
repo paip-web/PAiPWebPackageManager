@@ -10,7 +10,7 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
     protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_Linux,
-        PluginName = "Dnf",
+        PluginName = "Snapcraft",
         DoesNotWorkWithAdmin = false,
         IsAdminNeeded = false,
         IsWslSupported = false,
@@ -35,7 +35,7 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
             return false;
         }
         
-        return GetSupportedPackageManagers().Count > 0;
+        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().Count > 0;
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)
