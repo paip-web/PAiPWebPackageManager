@@ -80,27 +80,26 @@ public class PackageManagerPluginLinuxApk: PluginBaseClass
 
     public override bool AddPackageRepositoryToDatabase(string repository)
     {
-        var file = File.Open("/etc/apk/repositories", FileMode.Append);
+        using var file = File.Open("/etc/apk/repositories", FileMode.Append);
         if (!file.CanWrite)
         {
             return false;
         }
-        var writer = new StreamWriter(file);
+        using var writer = new StreamWriter(file);
         writer.WriteLine(repository);
-        writer.Close();
-        file.Close();
+        
         return true;
     }
 
     public override bool RemovePackageRepositoryFromDatabase(string repository)
     {
-        var file = File.Open("/etc/apk/repositories", FileMode.Open);
+        using var file = File.Open("/etc/apk/repositories", FileMode.Open);
         if (!file.CanWrite)
         {
             return false;
         }
-        var reader = new StreamReader(file);
-        var writer = new StreamWriter(file);
+        using var reader = new StreamReader(file);
+        using var writer = new StreamWriter(file);
         while (!reader.EndOfStream)
         {
             var line = reader.ReadLine();
@@ -110,9 +109,6 @@ public class PackageManagerPluginLinuxApk: PluginBaseClass
             }
             writer.WriteLine(line);
         }
-        writer.Close();
-        reader.Close();
-        file.Close();
         return true;
     }
 
