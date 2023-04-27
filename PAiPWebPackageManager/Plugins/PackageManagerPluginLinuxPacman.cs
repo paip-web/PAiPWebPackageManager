@@ -183,6 +183,70 @@ public class PackageManagerPluginLinuxPacman: PluginBaseClass
         });
     }
 
+    /// <summary>
+    /// API for installing packages from AUR
+    /// </summary>
+    /// <param name="package">
+    /// Package to install
+    /// Have to have this format: `name repository_url`
+    /// </param>
+    /// <returns>
+    /// True if installed successfully
+    /// </returns>
+    public bool InstallPackageFromAUR(string package)
+    {
+        if (package.Split(" ").Length != 2)
+        {
+            AnsiConsole.WriteLine("[red]AUR package have to have format: `name repository_url`[/red]");
+            return false;
+        }
+        var input = package.Split(" ");
+        var packageName = input[0];
+        var packageUrl = input[1];
+        var userDir = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var basePackageDir = Path.Join(userDir, "packages");
+        var packageDir = Path.Join(basePackageDir, packageName);
+        var cwd = Directory.GetCurrentDirectory();
+        
+        if (Directory.Exists(packageDir))
+        {
+            Directory.SetCurrentDirectory(packageDir);
+            var gitPullResult = CheckExitCode(
+                ExecuteCommand($"git pull"),
+                new[] { 0 }
+            );
+            if (!gitPullResult)
+            {
+                Directory.SetCurrentDirectory(cwd);
+                return false;
+            }
+            var packageResult = CheckExitCode(
+                ExecuteCommand($"makepkg -si"),
+                new[] { 0 }
+            );
+            Directory.SetCurrentDirectory(cwd);
+            return packageResult;
+        }
+        
+        Directory.SetCurrentDirectory(basePackageDir);
+        var gitCloneResult = CheckExitCode(
+            ExecuteCommand($"git clone {packageUrl} {packageName}"),
+            new[] { 0 }
+        );
+        if (!gitCloneResult)
+        {
+            Directory.SetCurrentDirectory(cwd);
+            return false;
+        }
+        Directory.SetCurrentDirectory(packageDir);
+        var package2Result = CheckExitCode(
+            ExecuteCommand($"makepkg -si"),
+            new[] { 0 }
+        );
+        Directory.SetCurrentDirectory(cwd);
+        return package2Result;
+    }
+
     public override bool UpdateAllCurrentPackages()
     {
         return CheckExitCode(
