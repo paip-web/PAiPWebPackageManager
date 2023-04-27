@@ -23,7 +23,7 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
 
     public override bool IsInstallSupported()
     {
-        return false;
+        return GetSupportedPackageManagers().Count > 0;
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)
@@ -99,24 +99,38 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
         );
     }
 
-    public override bool InstallPackageManager()
+    private List<PluginBaseClass> GetSupportedPackageManagers()
     {
         var flatpakPackageManagers = new List<PluginBaseClass>(new PluginBaseClass[]
-            {
-                new PackageManagerPluginLinuxApt(),
-                new PackageManagerPluginLinuxDnf(),
-                new PackageManagerPluginLinuxYum(),
-                new PackageManagerPluginLinuxPacman(),
-                new PackageManagerPluginLinuxApk(),
-            });
-        var supportedPackageManagers = flatpakPackageManagers
-            .Where(plugin => plugin.IsSupported());
+        {
+            new PackageManagerPluginLinuxApt(),
+            new PackageManagerPluginLinuxDnf(),
+            new PackageManagerPluginLinuxYum(),
+            new PackageManagerPluginLinuxPacman(),
+            new PackageManagerPluginLinuxApk(),
+        });
+        return flatpakPackageManagers
+            .Where(plugin => plugin.IsSupported())
+            .ToList();
+    }
+
+    public override bool InstallPackageManager()
+    {
+        var installed = false;
+        var supportedPackageManagers = GetSupportedPackageManagers();
+        
         foreach (var plugin in supportedPackageManagers)
         {
             if (plugin.InstallPackage("flatpak"))
             {
+                installed = true;
                 break;
             }
+        }
+
+        if (installed == false)
+        {
+            return false;
         }
 
         // Add Default Repo
