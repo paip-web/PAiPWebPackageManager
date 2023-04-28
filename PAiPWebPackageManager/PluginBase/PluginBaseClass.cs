@@ -4,6 +4,11 @@ using PAiPWebPackageManager.Command;
 
 namespace PAiPWebPackageManager.PluginBase;
 
+/// <summary>
+/// Base Class for Every Plugin
+///
+/// Note: This class should be inherited by every plugin and not by anything else
+/// </summary>
 public abstract class PluginBaseClass: IPlugin
 {
     #region Plugin Interface
