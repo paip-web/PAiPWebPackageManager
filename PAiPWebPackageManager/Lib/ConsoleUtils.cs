@@ -103,6 +103,23 @@ public static class ConsoleUtils
     {
         DebugLogWriteLine(message, DebugPrefix);
     }
+
+    /// <summary>
+    /// Log Message in Debug Environment
+    /// </summary>
+    /// <param name="enabled">
+    /// If true then log message
+    /// </param>
+    /// <param name="message">Message to Log</param>
+    /// <typeparam name="T">
+    /// Type of message
+    /// Not this supports only types that are supported by Console.Write
+    /// </typeparam>
+    public static void DebugLog<T>(bool enabled, T message)
+    {
+        if (!enabled) return;
+        DebugLog<T>(message);
+    }
     
     /// <summary>
     /// Log Message Line in Debug Environment
