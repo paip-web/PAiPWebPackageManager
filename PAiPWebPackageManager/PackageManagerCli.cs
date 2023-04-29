@@ -2,12 +2,13 @@
 using System.CommandLine.Invocation;
 using PAiPWebPackageManager.Command;
 using PAiPWebPackageManager.Lib;
-using Spectre.Console;
 
 namespace PAiPWebPackageManager;
 
 using Cli = System.CommandLine;
 using CliCommand = System.CommandLine.Command;
+using CliU = CliUtils;
+using Con = ConsoleUtils;
 
 public static class PackageManagerCli
 {
@@ -96,6 +97,56 @@ public static class PackageManagerCli
     }
     #endregion
     #region Command Handlers
+    private static void InstallCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("INSTALL");
+    }
+    private static void UpdateCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("UPDATE");
+    }
+    private static void UninstallCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("UNINSTALL");
+    }
+    private static void UpdatePackageDatabaseCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("UPDATE PACKAGE DB");
+    }
+    private static void AddPackageDatabaseCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("ADD PACKAGE DB");
+    }
+    private static void RemovePackageDatabaseCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("REMOVE PACKAGE DB");
+    }
+    private static void UpdateAllCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("UPDATE ALL");
+    }
+    private static void InstallPackageManagerCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
+    {
+        Con.DebugPrintSeparator("INSTALL PACKAGE MANAGER");
+        
+        var packageManager = invCtx.ParseResult.GetValueForOption(PackageManagerToUseOption);
+        if (packageManager is null)
+        {
+            Con.PrintError("Package Manager is not specified, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+
+        if (!PluginManager.GetPluginManager().IsInstallSupported(packageManager))
+        {
+            Con.PrintError("Package Manager is not supported, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+
+        Con.PrintInfo("Installing Package Manager...");
+        // PluginManager.GetPluginManager().InstallPackageManager(packageManager);
+    }
     #endregion
     
     public static int Run(string[] args)
@@ -185,55 +236,55 @@ public static class PackageManagerCli
         rootCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("ROOT");
+            Con.DebugPrintSeparator("ROOT");
         });
         installCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("INSTALL");
+            InstallCommandHandler(invCtx, packageManagementContext);
         });
         updateCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("UPDATE");
+            UpdateCommandHandler(invCtx, packageManagementContext);
         });
         uninstallCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("UNINSTALL");
+            UninstallCommandHandler(invCtx, packageManagementContext);
         });
         updatePackageDbCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("UPDATE PACKAGE DB");
+            UpdatePackageDatabaseCommandHandler(invCtx, packageManagementContext);
         });
         addPackageDbCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("ADD PACKAGE DB");
+            AddPackageDatabaseCommandHandler(invCtx, packageManagementContext);
         });
         removePackageDbCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("REMOVE PACKAGE DB");
+            RemovePackageDatabaseCommandHandler(invCtx, packageManagementContext);
         });
         updateAllCommand.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("UPDATE ALL");
+            UpdateAllCommandHandler(invCtx, packageManagementContext);
         });
         installPackageManager.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
             var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            ConsoleUtils.DebugPrintSeparator("INSTALL PACKAGE MANAGER");
+            InstallPackageManagerCommandHandler(invCtx, packageManagementContext);
         });
         #endregion
 
