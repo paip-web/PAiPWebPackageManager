@@ -72,6 +72,23 @@ public class PluginManager: IPlugin
     
     #endregion
     
+    #region Plugin Manager Main Instance
+
+    private static readonly PluginManager PluginManagerInstance = new PluginManager();
+    
+    /// <summary>
+    /// Get Main Plugin Manager Instance
+    /// </summary>
+    /// <returns>
+    /// Plugin Manager Instance
+    /// </returns>
+    public static PluginManager GetPluginManager()
+    {
+        return PluginManagerInstance;
+    }
+    
+    #endregion
+    
     #region Plugin Manager
     protected readonly Dictionary<string, IPlugin> Plugins;
 
