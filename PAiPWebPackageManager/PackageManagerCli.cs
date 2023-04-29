@@ -151,7 +151,13 @@ public static class PackageManagerCli
         }
 
         Con.PrintInfo("Installing Package Manager...");
-        PluginManager.GetPluginManager().InstallPackageManager(packageManager);
+        if (!PluginManager.GetPluginManager().InstallPackageManager(packageManager))
+        {
+            Con.PrintError("Package Manager could not be installed, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+        Con.PrintInfo($"Finished installing Package Manager: {packageManager}.");
     }
     #endregion
     
