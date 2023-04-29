@@ -1,5 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 using PAiPWebPackageManager.Command;
+using PAiPWebPackageManager.Lib;
 
 namespace PAiPWebPackageManager.PluginBase;
 
@@ -85,35 +86,43 @@ public record PluginInformationRecord
 
     public bool CheckRequirements(bool ignoreCommands = false)
     {
+        ConsoleUtils.DebugLog($"Checking requirements for plugin: {PluginName}");
         if (!IsWslSupported && Executor.IsWsl())
         {
+            ConsoleUtils.DebugLog("WSL is not supported");
             // WSL is not supported
             return false;
         }
         
         if (IsAdminNeeded && Executor.IsAdmin() == false)
         {
+            ConsoleUtils.DebugLog("Administrator is needed");
             // Administrator is needed
             return false;
         }
 
         if (DoesNotWorkWithAdmin && Executor.IsAdmin())
         {
+            ConsoleUtils.DebugLog("Can't work with admin");
             // Can't work with admin
             return false;
         }
         
         if (SupportedPlatforms.Any(RuntimeInformation.IsOSPlatform) == false)
         {
+            ConsoleUtils.DebugLog("Not supported platform");
             // Not supported platform
             return false;
         }
 
         if (ignoreCommands == false && RequiredCommands.TrueForAll(Executor.IsCommandAvailable) == false)
         {
+            ConsoleUtils.DebugLog("System don't have required commands");
             // System don't have required commands
             return false;
         }
+        
+        ConsoleUtils.DebugLog($"Requirements for plugin: {PluginName} are ok");
 
         return true;
     }
