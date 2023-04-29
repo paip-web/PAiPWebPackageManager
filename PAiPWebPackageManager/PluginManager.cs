@@ -1,10 +1,22 @@
-﻿using PAiPWebPackageManager.PluginBase;
+﻿using PAiPWebPackageManager.Lib;
+using PAiPWebPackageManager.PluginBase;
 
 namespace PAiPWebPackageManager;
 
 public class PluginManager: IPlugin
 {
     #region Plugins Lists
+
+    /// <summary>
+    /// Get All Plugins List
+    /// </summary>
+    /// <returns>
+    /// List of all plugins
+    /// </returns>
+    public static List<IPlugin> GetAllPlugins()
+    {
+        return PluginsList.GetAllPlugins();
+    }
 
     /// <summary>
     /// Get All Available Plugins as List
@@ -47,7 +59,7 @@ public class PluginManager: IPlugin
             .GetAllPlugins()
             .Where(plugin => plugin.IsSupported())
             .ToDictionary(
-                pluginForKey => pluginForKey.GetPluginMetadata().PluginName.ToLower(),
+                pluginForKey => pluginForKey.GetPluginMetadata().PluginName,
                 pluginForValue => pluginForValue
             );
     }
@@ -65,7 +77,7 @@ public class PluginManager: IPlugin
             .GetAllPlugins()
             .Where(plugin => plugin.IsSupportedWithInstall())
             .ToDictionary(
-                pluginForKey => pluginForKey.GetPluginMetadata().PluginName.ToLower(),
+                pluginForKey => pluginForKey.GetPluginMetadata().PluginName,
                 pluginForValue => pluginForValue
             );
     }
@@ -74,8 +86,9 @@ public class PluginManager: IPlugin
     
     #region Plugin Manager Main Instance
 
-    private static readonly PluginManager PluginManagerInstance = new PluginManager();
-    
+    public static bool WithInstall = false;
+    private static PluginManager? PluginManagerInstance;
+
     /// <summary>
     /// Get Main Plugin Manager Instance
     /// </summary>
@@ -84,6 +97,10 @@ public class PluginManager: IPlugin
     /// </returns>
     public static PluginManager GetPluginManager()
     {
+        if (PluginManagerInstance is null)
+        {
+            PluginManagerInstance = new PluginManager(GetAllPlugins(), WithInstall);
+        }
         return PluginManagerInstance;
     }
     
@@ -112,7 +129,7 @@ public class PluginManager: IPlugin
                 plugin => (withInstall ? plugin.IsSupportedWithInstall() : plugin.IsSupported())
             )
             .ToDictionary(
-                pluginForKey => pluginForKey.GetPluginMetadata().PluginName.ToLower(),
+                pluginForKey => pluginForKey.GetPluginMetadata().PluginName,
                 pluginForValue => pluginForValue
             );
     }
