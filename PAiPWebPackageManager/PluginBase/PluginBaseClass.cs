@@ -160,9 +160,9 @@ public abstract class PluginBaseClass: IPlugin
     /// <returns>
     /// True if requirements are met
     /// </returns>
-    protected bool CheckBasicRequirements(bool ignoreCommands = false)
+    protected bool CheckBasicRequirements(bool ignoreCommands = false, bool ignoreNotWorkingWithAdmin = false)
     {
-        return this.GetPluginMetadata().CheckRequirements(ignoreCommands);
+        return this.GetPluginMetadata().CheckRequirements(ignoreCommands, ignoreNotWorkingWithAdmin);
     }
 
     /// <summary>
