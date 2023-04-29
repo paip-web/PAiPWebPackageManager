@@ -46,106 +46,73 @@ public static class ShellUtils
         return new string[] { "" };
     }
 
-    // Port of https://github.com/nim-lang/Nim/blob/version-1-6/lib/pure/os.nim#L1227 (os.findExe)
+    public static string ExpandTilde(string path)
+    {
+        if (path.Length == 0 || !path.StartsWith("~")) return path;
+        if (path.Length == 1)
+        {
+            return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        }
+        if (path[1] == Path.DirectorySeparatorChar || path[1] == Path.AltDirectorySeparatorChar)
+        {
+            return Path.Join(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                path[2..]
+            );
+        }
+
+        return path;
+    }
+
     public static string? FindExe(string exe)
     {
         if (exe.Length == 0) return null;
         var extensions = GetExecutableExtensions();
+
+        string AddFileExt(string file, string extension) => Path.HasExtension(file) ? file : Path.ChangeExtension(file, extension);
         
-        // Check Current Dir
-        var fileExists = (string filename) => {
-            return Path.Exists(filename);
-        };
-        var expandTilde = (string filename) => {
-            if (filename.Length == 0 || !filename.StartsWith("~")) return filename;
-            if (filename.Length == 1)
-            {
-                return Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-            }
-            if (filename[1] == Path.DirectorySeparatorChar || filename[1] == Path.AltDirectorySeparatorChar)
-            {
-                return Path.Join(
-                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                    filename[2..]
-                );
-            }
-
-            return filename;
-        };
-        var addFileExt = (string exe2, string ext) => {
-            if (Path.HasExtension(exe2))
-            {
-                return exe2;
-            }
-
-            return Path.ChangeExtension(exe2, ext);
-        };
-        var checkCurrentDir = () => {
-            foreach (var ext in extensions)
-            {
-                var f = addFileExt(exe, ext);
-                if (fileExists(f))
-                {
-                    return f;
-                }
-            }
-
-            return null;
-        };
-        if (IsPosix())
+        if ((IsPosix() && exe.Contains('/')) || !IsPosix())
         {
-            if (exe.Contains('/'))
+            var foundInCurrentDir = extensions
+                .ToList()
+                .Select((ext) => AddFileExt(exe, ext))
+                .Where(Path.Exists)
+                .Cast<string?>()
+                .FirstOrDefault(defaultValue: null);
+            if (foundInCurrentDir is not null)
             {
-                var r = checkCurrentDir();
-                if (r is not null)
-                {
-                    return r;
-                }
-            }
-        }
-        else
-        {
-            var r = checkCurrentDir();
-            if (r is not null)
-            {
-                return r;
+                return foundInCurrentDir;
             }
         }
 
         var path = Environment.GetEnvironmentVariable("PATH");
         if (path is null) return null;
-        foreach (var candidate in path.Split(Path.PathSeparator))
-        {
-            if (candidate.Length == 0) continue;
-            string x = "";
-            if (IsWindows())
-            {
+        var candidatePaths = path.Split(Path.PathSeparator);
+        if (candidatePaths.Length == 0) return null;
+
+        var candidates = candidatePaths
+            .ToList()
+            .Where((candidate) => candidate.Length != 0)
+            .Select((candidate) => {
+                if (!IsWindows())
+                {
+                    return Path.Join(ExpandTilde(candidate), exe);
+                }
+
                 if (candidate.StartsWith('"') && candidate.EndsWith('"'))
                 {
-                    x = candidate.Substring(1, candidate.Length - 2);
+                    return Path.Join(candidate.Substring(1, candidate.Length - 2), exe);
                 }
-                else
-                {
-                    x = candidate;
-                }
-                x = Path.Join(x, exe);
-            }
-            else
-            {
-                x = Path.Join(expandTilde(candidate), exe);
-            }
 
-            foreach (var ext in extensions)
-            {
-                var x2 = addFileExt(x, ext);
-                if (fileExists(x2))
-                {
-                    return x2;
-                }
-            }
-        }
+                return Path.Join(candidate, exe);
+            });
 
-        return null;
+        var realCandidates = candidates
+            .SelectMany((candidate) => extensions.Select((ext) => AddFileExt(candidate, ext)))
+            .Where(Path.Exists)
+            .FirstOrDefault(defaultValue: null);
+
+        return realCandidates;
     }
     
     
