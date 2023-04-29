@@ -139,6 +139,9 @@ public static class PackageManagerCli
         }
         
         PluginManager.WithInstall = true;
+        PluginManager.GetPluginManager();
+        
+        Con.DebugPrintSeparator("Installation of Package Manager");
         
         if (!PluginManager.GetPluginManager().IsInstallSupported(pluginName: packageManager))
         {
