@@ -19,7 +19,12 @@ public static class PackageManagerCli
         opt.FromAmong(possibleOptions);
         return opt;
     }
-    
+    private static Argument<string?> BuildStringArgument(Argument<string?> opt, string[] possibleOptions)
+    {
+        opt.FromAmong(possibleOptions);
+        return opt;
+    }
+
     #endregion
     #region Package Management Options
     private static readonly Option<bool> SupportInstallationOfPmOption = new Option<bool>(
@@ -49,6 +54,12 @@ public static class PackageManagerCli
         description: "Show debug messaging",
         getDefaultValue: () => false
     );
+    #endregion
+    #region Commands Options and Arguments
+    private static readonly Argument<string?> InstallPackageManagerArgument = BuildStringArgument(new Argument<string?>(
+        name: "package_manager",
+        description: "Specify package manager to use."
+    ),PluginsList.GetAllPluginNames().ToArray());
     #endregion
     #region Add Package Management Options
     private static CliCommand AddPackageManagementOptions(CliCommand cmd)
@@ -128,9 +139,9 @@ public static class PackageManagerCli
     }
     private static void InstallPackageManagerCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
     {
-        Con.DebugPrintSeparator("INSTALL PACKAGE MANAGER");
+        Con.DebugPrintSeparator("install-pm Command Handler");
         
-        var packageManager = invCtx.ParseResult.GetValueForOption(PackageManagerToUseOption);
+        var packageManager = pmInvCtx.PackageManagerToUse;
         if (string.IsNullOrWhiteSpace(packageManager))
         {
             Con.PrintError("Package Manager is not specified, exiting...");
@@ -239,7 +250,7 @@ public static class PackageManagerCli
             name: "install-pm",
             description: "Install specified Package Manager if it supports it."
         );
-        installPackageManager = AddPackageManagementOptions(installPackageManager);
+        installPackageManager.AddArgument(InstallPackageManagerArgument);
         rootCommand.AddCommand(installPackageManager);
         #endregion
         
@@ -295,8 +306,11 @@ public static class PackageManagerCli
         installPackageManager.SetHandler((invCtx) =>
         {
             HandlerForGlobalOptions(invCtx);
-            var packageManagementContext = HandlerForPackageManagementOptions(invCtx);
-            InstallPackageManagerCommandHandler(invCtx, packageManagementContext);
+            var packageManager = invCtx.ParseResult.GetValueForArgument(InstallPackageManagerArgument);
+            InstallPackageManagerCommandHandler(
+                invCtx,
+                new PackageManagementInvocationContext(true, packageManager)
+            );
         });
         #endregion
 
