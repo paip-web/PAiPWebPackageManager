@@ -209,7 +209,7 @@ public static class ConsoleUtils
         AnsiConsole.Write(
             new Panel(json)
                 .Header(string.IsNullOrWhiteSpace(title) ? "Debug Log Object" : $"Debug Log Object: {title}")
-                .Collapse()
+                .Expand()
                 .RoundedBorder()
                 .BorderColor(Color.Yellow));
     }
