@@ -1,9 +1,12 @@
-﻿namespace PAiPWebPackageManager;
+﻿using PAiPWebPackageManager.Lib;
+
+namespace PAiPWebPackageManager;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        Console.WriteLine("Hello World!");
+        ConsoleUtils.PrintAppBanner();
+        return PackageManagerCli.Run(args);
     }
 }

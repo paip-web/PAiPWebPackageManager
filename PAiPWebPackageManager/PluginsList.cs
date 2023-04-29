@@ -37,4 +37,15 @@ public static class PluginsList
             // Convert to list
             .ToList();
     }
+
+    /// <summary>
+    /// List of all the plugin names
+    /// </summary>
+    /// <returns>List of plugin names</returns>
+    public static List<string> GetAllPluginNames()
+    {
+        return GetAllPlugins()
+            .Select(plugin => plugin.GetPluginMetadata().PluginName)
+            .ToList();
+    }
 }
