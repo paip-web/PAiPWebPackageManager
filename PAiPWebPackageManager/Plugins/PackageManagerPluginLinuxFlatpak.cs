@@ -23,7 +23,7 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
 
     public override bool IsInstallSupported()
     {
-        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().Count > 0;
+        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().ArePluginsAvailable();
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)
@@ -99,36 +99,24 @@ public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
         );
     }
 
-    private List<PluginBaseClass> GetSupportedPackageManagers()
+    private PluginManager? _pluginManagerInstance = null;
+    
+    private PluginManager GetSupportedPackageManagers()
     {
-        var flatpakPackageManagers = new List<PluginBaseClass>(new PluginBaseClass[]
-        {
-            new PackageManagerPluginLinuxApt(),
-            new PackageManagerPluginLinuxDnf(),
-            new PackageManagerPluginLinuxYum(),
-            new PackageManagerPluginLinuxPacman(),
-            new PackageManagerPluginLinuxApk(),
+        _pluginManagerInstance ??= new PluginManager(new[] {
+            "Apt",
+            "Dnf",
+            "Yum",
+            "Pacman",
+            "Apk",
         });
-        return flatpakPackageManagers
-            .Where(plugin => plugin.IsSupported())
-            .ToList();
+        
+        return _pluginManagerInstance;
     }
 
     public override bool InstallPackageManager()
     {
-        var installed = false;
-        var supportedPackageManagers = GetSupportedPackageManagers();
-        
-        foreach (var plugin in supportedPackageManagers)
-        {
-            if (plugin.InstallPackage("flatpak"))
-            {
-                installed = true;
-                break;
-            }
-        }
-
-        if (installed == false)
+        if (GetSupportedPackageManagers().InstallPackage("flatpak") == false)
         {
             return false;
         }

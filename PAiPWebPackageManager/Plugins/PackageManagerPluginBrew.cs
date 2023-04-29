@@ -22,8 +22,9 @@ public class PackageManagerPluginBrew: PluginBaseClass
 
     public override bool IsInstallSupported()
     {
-        return CheckBasicRequirements(ignoreCommands: true)
+        return CheckBasicRequirements(ignoreCommands: true, ignoreNotWorkingWithAdmin: true)
                && IsCommandAvailable("curl")
+               && IsCommandAvailable("git")
                && IsCommandAvailable("bash");
     }
 
@@ -101,11 +102,30 @@ public class PackageManagerPluginBrew: PluginBaseClass
 
     public override bool InstallPackageManager()
     {
-        return CheckExitCode(
+        var installCommand = CheckExitCode(
             ExecuteCommand(
                 "/bin/bash -c \"$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
             ),
             new[] { 0 }
         );
+
+        if (!installCommand) return false;
+        
+        
+        using var file = File.Open(
+            Path.Join(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                ".profile"
+            ),
+            FileMode.Append
+        );
+        if (!file.CanWrite)
+        {
+            return false;
+        }
+        using var writer = new StreamWriter(file);
+        writer.WriteLine("eval \"$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)\"");
+
+        return true;
     }
 }

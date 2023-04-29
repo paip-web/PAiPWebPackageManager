@@ -35,7 +35,7 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
             return false;
         }
         
-        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().Count > 0;
+        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().ArePluginsAvailable();
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)
@@ -102,18 +102,17 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
         );
     }
     
-    private Dictionary<string, PluginBaseClass> GetSupportedPackageManagers()
+    private PluginManager? _pluginManagerInstance = null;
+    
+    private PluginManager GetSupportedPackageManagers()
     {
-        var snapcraftPackageManagers = new Dictionary<string, PluginBaseClass>(new []
-        {
-            new KeyValuePair<string, PluginBaseClass>("pacman", new PackageManagerPluginLinuxPacman()),
-            new KeyValuePair<string, PluginBaseClass>("apt", new PackageManagerPluginLinuxApt()),
-            new KeyValuePair<string, PluginBaseClass>("dnf", new PackageManagerPluginLinuxDnf()),
-            new KeyValuePair<string, PluginBaseClass>("yum", new PackageManagerPluginLinuxYum()),
+        _pluginManagerInstance ??= new PluginManager(new[] {
+            "pacman",
+            "apt",
+            "dnf",
+            "yum",
         });
-        return snapcraftPackageManagers
-            .Where(pair => pair.Value.IsSupported())
-            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        return _pluginManagerInstance;
     }
 
     public override bool InstallPackageManager()
@@ -123,7 +122,7 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
         var supportedPackageManagers = GetSupportedPackageManagers();
         
         
-        foreach (var (pluginName, plugin) in supportedPackageManagers)
+        foreach (var (pluginName, plugin) in supportedPackageManagers.GetPluginsDict())
         {
             if (pluginName == "pacman" && plugin is PackageManagerPluginLinuxPacman pacmanPlugin)
             {
