@@ -123,11 +123,6 @@ public abstract class PluginBaseClass: IPlugin
     /// </param>
     protected Process? ExecuteCommand(string command)
     {
-        if (this.GetPluginMetadata().IsAdminNeeded)
-        {
-            return Executor.ExecuteCommandCrossPlatformAsAdmin(command);
-        }
-
         return Executor.ExecuteCommandCrossPlatform(command);
     }
     
