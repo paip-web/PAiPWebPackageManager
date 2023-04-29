@@ -8,6 +8,18 @@ services:
     entrypoint: ["bash"]
     tty: true
     stdin_open: true
+    volumes:
+      - ..:/src
+  app-test:
+    build:
+      context: ..
+      dockerfile: PAiPWebPackageManager/Dockerfile
+    entrypoint: ["bash"]
+    command: ["/src/PAiPWebPackageManager/test.sh"]
+    tty: true
+    stdin_open: true
+    volumes:
+      - ..:/src
   sdk:
     image: mcr.microsoft.com/dotnet/sdk:7.0
     entrypoint: ["bash"]
