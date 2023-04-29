@@ -166,10 +166,9 @@ public static class Executor
     /// </returns>
     public static Process? ExecuteCommandCrossPlatform(string command)
     {
-        var escapedCommand = EscapeCommand(command);
         return ExecuteCommand(
             PlatformShell.GetBasicShellCommand(),
-            escapedCommand,
+            command,
             PlatformShell.GetBasicShellArguments(),
             dryRun: _isDryRun
         );
