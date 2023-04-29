@@ -134,6 +134,7 @@ public static class Executor
         cmd.StartInfo.Arguments = arguments;
         cmd.StartInfo.RedirectStandardInput = true;
         cmd.StartInfo.RedirectStandardOutput = true;
+        cmd.StartInfo.RedirectStandardError = true;
         cmd.StartInfo.CreateNoWindow = true;
         cmd.StartInfo.UseShellExecute = false;
         cmd.Start();
@@ -141,7 +142,7 @@ public static class Executor
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
         cmd.WaitForExit();
-        Console.WriteLine(cmd.StandardOutput.ReadToEnd());
+        ConsoleUtils.PrintPackageManagerProcessOutput(cmd, $"{shell} {arguments} -> {command}");
         return cmd;
     }
     

@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Diagnostics;
+using System.Reflection;
 using Spectre.Console;
 using Spectre.Console.Json;
 
@@ -211,7 +212,8 @@ public static class ConsoleUtils
                 .Header(string.IsNullOrWhiteSpace(title) ? "Debug Log Object" : $"Debug Log Object: {title}")
                 .Expand()
                 .RoundedBorder()
-                .BorderColor(Color.Yellow));
+                .BorderColor(Color.Yellow)
+        );
     }
     
     #endregion
@@ -312,6 +314,21 @@ public static class ConsoleUtils
     public static void PrintSeparatorTitle(string title)
     {
         AnsiConsole.Write(new Rule(title));
+    }
+
+    /// <summary>
+    /// Print Separator with Title
+    /// </summary>
+    /// <param name="title">
+    /// Title to print
+    /// </param>
+    /// <param name="color">Color of Separator</param>
+    public static void PrintSeparatorTitle(string title, Color color)
+    {
+        AnsiConsole.Write(
+            new Rule(title)
+                .RuleStyle(new Style(color))
+        );
     }
     
     #endregion
@@ -440,6 +457,64 @@ public static class ConsoleUtils
         action();
     }
 
+    #endregion
+    
+    #region Package Manager Output
+    
+    /// <summary>
+    /// Print Package Manager Process Output
+    /// </summary>
+    /// <param name="process">
+    /// Package Manager Process
+    /// </param>
+    /// <param name="cmd">
+    /// Command String for Title
+    /// </param>
+    public static void PrintPackageManagerProcessOutput(Process process, string cmd)
+    {
+        var stdout = process.StandardOutput.ReadToEnd();
+        var stderr = process.StandardError.ReadToEnd();
+        var escapedStdout = Markup.Escape(stdout);
+        var escapedStderr = Markup.Escape(stderr);
+        var escapedCmd = Markup.Escape(cmd);
+        
+        PrintPackageManagerOutput(escapedStdout, escapedCmd);
+        PrintPackageManagerErrors(escapedStderr, escapedCmd);
+        PrintSeparatorTitle($"Finished - {escapedCmd}", Color.Blue);
+    }
+    
+    /// <summary>
+    /// Print Package Manager Process Output
+    /// </summary>
+    /// <param name="stdout">
+    /// Package Manager Process STDOUT
+    /// </param>
+    /// <param name="cmd">
+    /// Command String for Title
+    /// </param>
+    private static void PrintPackageManagerOutput(string stdout, string cmd)
+    {
+        if (string.IsNullOrWhiteSpace(stdout)) return;
+        PrintSeparatorTitle($"STDOUT - {cmd}", Color.Blue);
+        Console.WriteLine(stdout);
+    }
+    
+    /// <summary>
+    /// Print Package Manager Process Errors
+    /// </summary>
+    /// <param name="stderr">
+    /// Package Manager Process STDERR
+    /// </param>
+    /// <param name="cmd">
+    /// Command String for Title
+    /// </param>
+    private static void PrintPackageManagerErrors(string stderr, string cmd)
+    {
+        if (string.IsNullOrWhiteSpace(stderr)) return;
+        PrintSeparatorTitle($"STDERR - {cmd}", Color.Yellow);
+        Console.WriteLine(stderr);
+    }
+    
     #endregion
 }
 
