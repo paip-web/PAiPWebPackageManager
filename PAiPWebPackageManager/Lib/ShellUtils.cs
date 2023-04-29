@@ -108,7 +108,9 @@ public static class ShellUtils
         if (executableToFind.Length == 0) return null;
         var extensions = GetExecutableExtensions();
 
-        string AddFileExt(string file, string extension) => Path.HasExtension(file) ? file : Path.ChangeExtension(file, extension);
+        string AddFileExt(string file, string extension) => Path.HasExtension(file) || string.IsNullOrWhiteSpace(extension)
+            ? file
+            : Path.ChangeExtension(file, extension);
         
         if ((IsPosix() && executableToFind.Contains('/')) || !IsPosix())
         {
