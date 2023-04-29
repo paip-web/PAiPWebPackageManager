@@ -80,6 +80,7 @@ public static class PackageManagerCli
         var packageManager = invCtx.ParseResult.GetValueForOption(PackageManagerToUseOption);
         
         var context = new PackageManagementInvocationContext(isInstallSupported, packageManager);
+        PluginManager.WithInstall = context.SupportInstallationOfPm;
         
         ConsoleUtils.DebugPrintSeparator("Package Management Options");
         ConsoleUtils.DebugLog(
@@ -130,14 +131,16 @@ public static class PackageManagerCli
         Con.DebugPrintSeparator("INSTALL PACKAGE MANAGER");
         
         var packageManager = invCtx.ParseResult.GetValueForOption(PackageManagerToUseOption);
-        if (packageManager is null)
+        if (string.IsNullOrWhiteSpace(packageManager))
         {
             Con.PrintError("Package Manager is not specified, exiting...");
             CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
             return;
         }
-
-        if (!PluginManager.GetPluginManager().IsInstallSupported(packageManager))
+        
+        PluginManager.WithInstall = true;
+        
+        if (!PluginManager.GetPluginManager().IsInstallSupported(pluginName: packageManager))
         {
             Con.PrintError("Package Manager is not supported, exiting...");
             CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
@@ -145,7 +148,7 @@ public static class PackageManagerCli
         }
 
         Con.PrintInfo("Installing Package Manager...");
-        // PluginManager.GetPluginManager().InstallPackageManager(packageManager);
+        PluginManager.GetPluginManager().InstallPackageManager(packageManager);
     }
     #endregion
     
