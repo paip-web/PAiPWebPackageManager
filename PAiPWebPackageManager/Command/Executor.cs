@@ -10,6 +10,20 @@ namespace PAiPWebPackageManager.Command;
 public static class Executor
 {
     /// <summary>
+    /// Is Dry Run
+    /// </summary>
+    private static bool _isDryRun = false;
+    
+    /// <summary>
+    /// Set Dry Run
+    /// </summary>
+    /// <param name="dryRun">Is it dry run or no</param>
+    public static void SetDryRun(bool dryRun)
+    {
+        _isDryRun = dryRun;
+    }
+    
+    /// <summary>
     /// Execute PowerShell Command
     /// </summary>
     /// <param name="function">
@@ -176,7 +190,12 @@ public static class Executor
     public static Process? ExecuteCommandCrossPlatform(string command)
     {
         var escapedCommand = EscapeCommand(command);
-        return ExecuteCommand(PlatformShell.GetBasicShellCommand(), escapedCommand, PlatformShell.GetBasicShellArguments());
+        return ExecuteCommand(
+            PlatformShell.GetBasicShellCommand(),
+            escapedCommand,
+            PlatformShell.GetBasicShellArguments(),
+            dryRun: _isDryRun
+        );
     }
     
     /// <summary>
@@ -195,7 +214,11 @@ public static class Executor
             return ExecuteCommandCrossPlatform(command);
         }
         var escapedCommand = EscapeCommand(command);
-        return ExecuteCommandAsAdmin(PlatformShell.GetBasicShellCommand(), $"{PlatformShell.GetBasicShellArguments()} {escapedCommand}");
+        return ExecuteCommandAsAdmin(
+            PlatformShell.GetBasicShellCommand(),
+            $"{PlatformShell.GetBasicShellArguments()} {escapedCommand}",
+            dryRun: _isDryRun
+        );
     }
     
     /// <summary>
