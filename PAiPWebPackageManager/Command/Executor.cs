@@ -1,6 +1,4 @@
-﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Management.Automation;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using PAiPWebPackageManager.Lib;
 using Spectre.Console;
@@ -21,24 +19,6 @@ public static class Executor
     public static void SetDryRun(bool dryRun)
     {
         _isDryRun = dryRun;
-    }
-    
-    /// <summary>
-    /// Execute PowerShell Command
-    /// </summary>
-    /// <param name="function">
-    /// (pwsh) => {
-    ///     pwsh.AddCommand("Get-Command").AddParameter("Name", "bash");
-    /// }
-    /// </param>
-    /// <returns>
-    /// Powershell Result Object
-    /// </returns>
-    public static Collection<PSObject> ExecutePowerShell(Action<PowerShell> function)
-    {
-        var pwsh = PowerShell.Create();
-        function(pwsh);
-        return pwsh.Invoke();
     }
     
     /// <summary>
@@ -172,10 +152,7 @@ public static class Executor
     /// <returns>If command is available</returns>
     public static bool IsCommandAvailable(string command)
     {
-        var rPowerShell = ExecutePowerShell(
-            powerShell => powerShell.AddCommand("Get-Command").AddParameter("Name", command)
-        );
-        return rPowerShell.Count > 0;
+        return ShellUtils.IsCommandAvailable(command);
     }
     
     /// <summary>
@@ -220,28 +197,7 @@ public static class Executor
             dryRun: _isDryRun
         );
     }
-    
-    /// <summary>
-    /// Execute Command using PowerShell
-    /// </summary>
-    /// <param name="command">
-    /// Command to Execute
-    /// </param>
-    /// <returns>
-    /// - outputObject: Output Object
-    /// - exitCode: Exit Code of command
-    /// - Streams: Streams of STDOUT, STDERR
-    /// - HadErrors: Does it had errors
-    /// </returns>
-    public static (Collection<PSObject> outputObject, PSDataStreams Streams, bool HadErrors) ExecuteCommandUsingPowerShell(string command)
-    {
-        var pwsh = PowerShell.Create();
-        pwsh.AddScript(command);
-        var outputObject = pwsh.Invoke();
-        
-        return (outputObject, pwsh.Streams, pwsh.HadErrors);
-    }
-    
+
     /// <summary>
     /// Try to escape command for processing
     /// </summary>
