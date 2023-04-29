@@ -1,4 +1,5 @@
 ﻿using PAiPWebPackageManager.Lib;
+using Spectre.Console;
 
 namespace PAiPWebPackageManager;
 
@@ -6,7 +7,15 @@ public class Program
 {
     public static int Main(string[] args)
     {
-        ConsoleUtils.PrintAppBanner();
-        return PackageManagerCli.Run(args);
+        try
+        {
+            ConsoleUtils.PrintAppBanner();
+            return PackageManagerCli.Run(args);
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.WriteException(e);
+            return CliUtils.GetExitCode(PwpmExitCode.UnhandledError);
+        }
     }
 }
