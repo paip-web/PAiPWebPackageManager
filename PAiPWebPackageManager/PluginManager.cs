@@ -175,6 +175,14 @@ public class PluginManager: IPlugin
         );
     }
 
+    public PluginInformationRecord PluginMetadata
+    {
+        get => GetPluginMetadata();
+        // ReSharper disable once ValueParameterNotUsed
+        // Ignore this warning because this function just throws exception
+        set => GetPluginMetadata();
+    }
+
     public PluginInformationRecord? GetPluginMetadata(string pluginName)
     {
         return GetPlugins()
@@ -186,7 +194,7 @@ public class PluginManager: IPlugin
     #endregion
     
     #region IPlugin - Supported
-    
+
     public bool IsSupported()
     {
         return GetPlugins().All(pair => pair.Value.IsSupported());

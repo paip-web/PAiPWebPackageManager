@@ -6,7 +6,7 @@ namespace PAiPWebPackageManager.Plugins;
 
 public class PackageManagerPluginSpecialNix: PluginBaseClass
 {
-    protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
+    public override PluginInformationRecord PluginMetadata { get; set; } = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_LinuxAndMacOS,
         PluginName = "Nix",

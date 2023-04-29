@@ -6,7 +6,7 @@ namespace PAiPWebPackageManager.Plugins;
 
 public class PackageManagerPluginLinuxFlatpak: PluginBaseClass
 {
-    protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
+    public override PluginInformationRecord PluginMetadata { get; set; } = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_Linux,
         PluginName = "Flatpak",

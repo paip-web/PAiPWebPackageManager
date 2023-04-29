@@ -9,7 +9,7 @@ public interface IPlugin
     /// <returns>
     /// Get Plugin Metadata
     /// </returns>
-    public PluginInformationRecord GetPluginMetadata();
+    public PluginInformationRecord PluginMetadata { get; set; }
     #endregion
     
     #region Supported

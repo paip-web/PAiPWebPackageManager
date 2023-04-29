@@ -5,7 +5,7 @@ namespace PAiPWebPackageManager.Plugins;
 
 public class PackageManagerPluginMacOSBrewCask: PluginBaseClass
 {
-    protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
+    public override PluginInformationRecord PluginMetadata { get; set; } = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_MacOS,
         PluginName = "BrewCask",

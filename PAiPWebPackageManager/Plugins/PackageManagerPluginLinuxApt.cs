@@ -7,7 +7,7 @@ public class PackageManagerPluginLinuxApt: PluginBaseClass
 {
     private string _packageManagerCommand = "apt-get";
     
-    protected new PluginInformationRecord PluginMetadata = new PluginInformationRecord()
+    public override PluginInformationRecord PluginMetadata { get; set; } = new PluginInformationRecord()
     {
         PluginCategoryType = PluginCategoryEnum.Operating_System_x_Linux,
         PluginName = "Apt",

@@ -12,13 +12,7 @@ namespace PAiPWebPackageManager.PluginBase;
 public abstract class PluginBaseClass: IPlugin
 {
     #region Plugin Interface
-
-    protected PluginInformationRecord PluginMetadata = new PluginInformationRecord();
-
-    public PluginInformationRecord GetPluginMetadata()
-    {
-        return PluginMetadata;
-    }
+    public abstract PluginInformationRecord PluginMetadata { get; set; }
 
     public abstract bool IsSupported();
 
@@ -129,7 +123,7 @@ public abstract class PluginBaseClass: IPlugin
     /// </param>
     protected Process? ExecuteCommand(string command)
     {
-        if (GetPluginMetadata().IsAdminNeeded)
+        if (this.GetPluginMetadata().IsAdminNeeded)
         {
             return Executor.ExecuteCommandCrossPlatformAsAdmin(command);
         }
@@ -173,7 +167,7 @@ public abstract class PluginBaseClass: IPlugin
     /// </returns>
     protected bool CheckBasicRequirements(bool ignoreCommands = false)
     {
-        return GetPluginMetadata().CheckRequirements(ignoreCommands);
+        return this.GetPluginMetadata().CheckRequirements(ignoreCommands);
     }
 
     /// <summary>
@@ -242,4 +236,33 @@ public abstract class PluginBaseClass: IPlugin
         return managerUri == acceptedUri;
     }
     #endregion
+}
+
+public static class PluginBaseClassExtensions
+{
+    /// <summary>
+    /// Get Plugin Metadata
+    /// </summary>
+    /// <param name="plugin">
+    /// Plugin to get metadata from
+    /// </param>
+    /// <returns>
+    /// Plugin Metadata
+    /// </returns>
+    public static PluginInformationRecord GetPluginMetadata(this PluginBaseClass plugin)
+    {
+        return plugin.PluginMetadata;
+    }
+    
+    
+    public static PluginInformationRecord GetPluginMetadataExtension(this PluginBaseClass plugin)
+    {
+        return plugin.PluginMetadata;
+    }
+    
+    
+    public static PluginInformationRecord GetPluginMetadata(this IPlugin plugin)
+    {
+        return plugin.PluginMetadata;
+    }
 }
