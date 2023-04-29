@@ -84,45 +84,46 @@ public record PluginInformationRecord
         return availableCommands.Length == 0 ? (cmds.First(), true) : (availableCommands.First(), false);
     }
 
-    public bool CheckRequirements(bool ignoreCommands = false)
+    public bool CheckRequirements(bool ignoreCommands = false, bool ignoreNotWorkingWithAdmin = false)
     {
-        ConsoleUtils.DebugLog($"Checking requirements for plugin: {PluginName}");
+        var enableDebugLogMessages = false;
+        ConsoleUtils.DebugLog(enableDebugLogMessages, $"Checking requirements for plugin: {PluginName}");
         if (!IsWslSupported && Executor.IsWsl())
         {
-            ConsoleUtils.DebugLog("WSL is not supported");
+            ConsoleUtils.DebugLog(enableDebugLogMessages, "WSL is not supported");
             // WSL is not supported
             return false;
         }
         
         if (IsAdminNeeded && Executor.IsAdmin() == false)
         {
-            ConsoleUtils.DebugLog("Administrator is needed");
+            ConsoleUtils.DebugLog(enableDebugLogMessages, "Administrator is needed");
             // Administrator is needed
             return false;
         }
 
-        if (DoesNotWorkWithAdmin && Executor.IsAdmin())
+        if (ignoreNotWorkingWithAdmin == false && DoesNotWorkWithAdmin && Executor.IsAdmin())
         {
-            ConsoleUtils.DebugLog("Can't work with admin");
+            ConsoleUtils.DebugLog(enableDebugLogMessages, "Can't work with admin");
             // Can't work with admin
             return false;
         }
         
         if (SupportedPlatforms.Any(RuntimeInformation.IsOSPlatform) == false)
         {
-            ConsoleUtils.DebugLog("Not supported platform");
+            ConsoleUtils.DebugLog(enableDebugLogMessages, "Not supported platform");
             // Not supported platform
             return false;
         }
 
         if (ignoreCommands == false && RequiredCommands.TrueForAll(Executor.IsCommandAvailable) == false)
         {
-            ConsoleUtils.DebugLog("System don't have required commands");
+            ConsoleUtils.DebugLog(enableDebugLogMessages, "System don't have required commands");
             // System don't have required commands
             return false;
         }
         
-        ConsoleUtils.DebugLog($"Requirements for plugin: {PluginName} are ok");
+        ConsoleUtils.DebugLog(enableDebugLogMessages, $"Requirements for plugin: {PluginName} are ok");
 
         return true;
     }
