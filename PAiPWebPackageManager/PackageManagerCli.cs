@@ -60,6 +60,10 @@ public static class PackageManagerCli
         name: "package_manager",
         description: "Specify package manager to use."
     ),PluginsList.GetAllPluginNames().ToArray());
+    private static readonly Argument<string?> SpecialScriptArgument = BuildStringArgument(new Argument<string?>(
+        name: "special_script",
+        description: "Specify special script you want to run."
+    ),SpecialScripts.SpecialScripts.GetScriptNames());
     #endregion
     #region Add Package Management Options
     private static CliCommand AddPackageManagementOptions(CliCommand cmd)
@@ -161,7 +165,7 @@ public static class PackageManagerCli
             return;
         }
 
-        Con.PrintInfo("Installing Package Manager...");
+        Con.PrintInfo($"Installing Package Manager: {packageManager}...");
         if (!PluginManager.GetPluginManager().InstallPackageManager(packageManager))
         {
             Con.PrintError("Package Manager could not be installed, exiting...");
@@ -169,6 +173,30 @@ public static class PackageManagerCli
             return;
         }
         Con.PrintInfo($"Finished installing Package Manager: {packageManager}.");
+    }
+    private static void SpecialScriptCommandHandler(InvocationContext invCtx)
+    {
+        Con.DebugPrintSeparator("special-script Command Handler");
+        var specialScript = invCtx.ParseResult.GetValueForArgument(SpecialScriptArgument);
+        
+        if (string.IsNullOrWhiteSpace(specialScript))
+        {
+            Con.PrintError("Special Script is not specified, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+        
+        Con.DebugPrintSeparator("Running Special Script");
+
+        Con.PrintInfo($"Running Special Script {specialScript}...");
+        var err = SpecialScripts.SpecialScripts.RunScript(specialScript);
+        if (err != CliU.GetExitCode(PwpmExitCode.Success))
+        {
+            Con.PrintError("Package Manager could not be installed, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+        Con.PrintInfo($"Finished running Special Script: {specialScript}.");
     }
     #endregion
     
@@ -245,13 +273,24 @@ public static class PackageManagerCli
         updateAllCommand = AddPackageManagementOptions(updateAllCommand);
         rootCommand.AddCommand(updateAllCommand);
         
-        // Update All Packages Command
+        // Install Package Manager Command
         var installPackageManager = new CliCommand(
             name: "install-pm",
             description: "Install specified Package Manager if it supports it."
         );
         installPackageManager.AddArgument(InstallPackageManagerArgument);
         rootCommand.AddCommand(installPackageManager);
+        
+        // Special Script Command
+        var specialScript = new CliCommand(
+            name: "special-script",
+            description: "Run specified special script. " +
+                         "Special scripts are scripts that does something " +
+                         "straight through commands without any checks through package manager plugins. " +
+                         "This scripts are meant to be used for special cases only."
+        );
+        specialScript.AddArgument(SpecialScriptArgument);
+        rootCommand.AddCommand(specialScript);
         #endregion
         
         #region Run - Handlers for Commands
@@ -311,6 +350,11 @@ public static class PackageManagerCli
                 invCtx,
                 new PackageManagementInvocationContext(true, packageManager)
             );
+        });
+        specialScript.SetHandler((invCtx) =>
+        {
+            HandlerForGlobalOptions(invCtx);
+            SpecialScriptCommandHandler(invCtx);
         });
         #endregion
 
