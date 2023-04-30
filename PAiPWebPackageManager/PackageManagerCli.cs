@@ -139,7 +139,25 @@ public static class PackageManagerCli
     }
     private static void UpdateAllCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
     {
-        Con.DebugPrintSeparator("UPDATE ALL");
+        Con.DebugPrintSeparator("update-all Command Handler");
+        
+        var packageManager = pmInvCtx.PackageManagerToUse;
+        
+        PluginManager.WithInstall = pmInvCtx.SupportInstallationOfPm;
+        PluginManager.GetPluginManager();
+        
+        
+        Con.PrintInfo("Installing Updates...");
+        var result = packageManager is not null
+            ? PluginManager.GetPluginManager().UpdateAllCurrentPackages(packageManager)
+            : PluginManager.GetPluginManager().UpdateAllCurrentPackages();
+        if (!result)
+        {
+            Con.PrintError("Package Manager could not be installed, exiting...");
+            CliU.SetExitCode(invCtx, PwpmExitCode.Failure);
+            return;
+        }
+        Con.PrintInfo($"Finished installing updates.");
     }
     private static void InstallPackageManagerCommandHandler(InvocationContext invCtx, PackageManagementInvocationContext pmInvCtx)
     {
