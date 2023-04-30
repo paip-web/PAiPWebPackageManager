@@ -194,20 +194,7 @@ public abstract class PluginBaseClass: IPlugin
     /// </returns>
     protected static bool CheckExitCode(Process? commandResult, IEnumerable<int>? approvedExitCodes)
     {
-        if (commandResult is null)
-        {
-            return false;
-        }
-
-        if (commandResult.HasExited == false)
-        {
-            return false;
-        }
-
-        approvedExitCodes ??= new[] { 0 };
-        
-        return new List<int>(approvedExitCodes)
-            .TrueForAll(approvedExitCode => commandResult.ExitCode == approvedExitCode);
+        return Executor.CheckExitCode(commandResult, approvedExitCodes);
     }
 
     /// <summary>

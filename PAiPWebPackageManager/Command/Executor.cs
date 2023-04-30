@@ -250,4 +250,34 @@ public static class Executor
         }
         return ExecuteCommandCrossPlatform($"wsl -d {distribution} {command}");
     }
+    
+    /// <summary>
+    /// Check if command returned one of approved ExitCodes
+    /// </summary>
+    /// <param name="commandResult">
+    /// Result of Command you want to check
+    /// </param>
+    /// <param name="approvedExitCodes">
+    /// List of approved exit codes
+    /// </param>
+    /// <returns>
+    /// Did command succeed or no
+    /// </returns>
+    public static bool CheckExitCode(Process? commandResult, IEnumerable<int>? approvedExitCodes)
+    {
+        if (commandResult is null)
+        {
+            return false;
+        }
+
+        if (commandResult.HasExited == false)
+        {
+            return false;
+        }
+
+        approvedExitCodes ??= new[] { 0 };
+        
+        return new List<int>(approvedExitCodes)
+            .TrueForAll(approvedExitCode => commandResult.ExitCode == approvedExitCode);
+    }
 }
