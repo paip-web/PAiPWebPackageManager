@@ -496,7 +496,7 @@ public static class ConsoleUtils
         };
         process.ErrorDataReceived += (sender, e) => {
             var errLine = e.Data;
-            if (!string.IsNullOrWhiteSpace(errLine))
+            if (!string.IsNullOrWhiteSpace(errLine) && (!errLine.StartsWith("\r") || !errLine.StartsWith("\b")))
             {
                 AnsiConsole.Markup("[yellow]STDERR:[/] ");
             }
