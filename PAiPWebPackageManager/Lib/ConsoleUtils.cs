@@ -489,47 +489,25 @@ public static class ConsoleUtils
     /// </param>
     public static void PrintPackageManagerProcessOutput(Process process, string cmd)
     {
-        var stdout = process.StandardOutput.ReadToEnd();
-        var stderr = process.StandardError.ReadToEnd();
-        var escapedStdout = Markup.Escape(stdout);
-        var escapedStderr = Markup.Escape(stderr);
         var escapedCmd = Markup.Escape(cmd);
-        
-        PrintPackageManagerOutput(escapedStdout, escapedCmd);
-        PrintPackageManagerErrors(escapedStderr, escapedCmd);
-        PrintSeparatorTitle($"Finished - {escapedCmd}", Color.Blue);
-    }
-    
-    /// <summary>
-    /// Print Package Manager Process Output
-    /// </summary>
-    /// <param name="stdout">
-    /// Package Manager Process STDOUT
-    /// </param>
-    /// <param name="cmd">
-    /// Command String for Title
-    /// </param>
-    private static void PrintPackageManagerOutput(string stdout, string cmd)
-    {
-        if (string.IsNullOrWhiteSpace(stdout)) return;
-        PrintSeparatorTitle($"STDOUT - {cmd}", Color.Blue);
-        Console.WriteLine(stdout);
-    }
-    
-    /// <summary>
-    /// Print Package Manager Process Errors
-    /// </summary>
-    /// <param name="stderr">
-    /// Package Manager Process STDERR
-    /// </param>
-    /// <param name="cmd">
-    /// Command String for Title
-    /// </param>
-    private static void PrintPackageManagerErrors(string stderr, string cmd)
-    {
-        if (string.IsNullOrWhiteSpace(stderr)) return;
-        PrintSeparatorTitle($"STDERR - {cmd}", Color.Yellow);
-        Console.WriteLine(stderr);
+        PrintSeparatorTitle($"CMD - {escapedCmd}", Color.Blue);
+        process.OutputDataReceived += (sender, e) => {
+            Console.WriteLine(e.Data);
+        };
+        process.ErrorDataReceived += (sender, e) => {
+            var errLine = e.Data;
+            if (!string.IsNullOrWhiteSpace(errLine))
+            {
+                AnsiConsole.Markup("[yellow]STDERR:[/] ");
+            }
+
+            Console.WriteLine(errLine);
+        };
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+        process.Exited += (sender, e) => {
+            PrintSeparatorTitle($"Finished - {escapedCmd}", Color.Blue);
+        };
     }
     
     #endregion

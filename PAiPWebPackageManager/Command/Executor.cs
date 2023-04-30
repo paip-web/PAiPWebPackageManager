@@ -138,11 +138,11 @@ public static class Executor
         cmd.StartInfo.CreateNoWindow = true;
         cmd.StartInfo.UseShellExecute = false;
         cmd.Start();
+        ConsoleUtils.PrintPackageManagerProcessOutput(cmd, $"{shell} {arguments} -> {command}");
         cmd.StandardInput.WriteLine(command);
         cmd.StandardInput.Flush();
         cmd.StandardInput.Close();
         cmd.WaitForExit();
-        ConsoleUtils.PrintPackageManagerProcessOutput(cmd, $"{shell} {arguments} -> {command}");
         return cmd;
     }
     
