@@ -109,6 +109,9 @@ public class PackageManagerPluginLinuxApt: PluginBaseClass
     public override bool UpdateAllCurrentPackages()
     {
         return CheckExitCode(
+            ExecuteCommand($"{_packageManagerCommand} update -y"),
+            new[] { 0 }
+        ) && CheckExitCode(
             ExecuteCommand($"{_packageManagerCommand} upgrade -y"),
             new[] { 0 }
         ) && CheckExitCode(
