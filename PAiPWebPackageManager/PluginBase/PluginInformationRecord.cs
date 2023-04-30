@@ -84,7 +84,10 @@ public record PluginInformationRecord
         return availableCommands.Length == 0 ? (cmds.First(), true) : (availableCommands.First(), false);
     }
 
-    public bool CheckRequirements(bool ignoreCommands = false, bool ignoreNotWorkingWithAdmin = false)
+    public bool CheckRequirements(
+        bool ignoreCommands = false,
+        bool ignoreNotWorkingWithAdmin = false
+    )
     {
         var enableDebugLogMessages = false;
         ConsoleUtils.DebugLog(enableDebugLogMessages, $"Checking requirements for plugin: {PluginName}");

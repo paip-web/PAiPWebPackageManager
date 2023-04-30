@@ -29,13 +29,9 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
         {
             return false;
         }
-
-        if (Executor.IsAdmin() == false)
-        {
-            return false;
-        }
         
-        return CheckBasicRequirements(ignoreCommands: true) && GetSupportedPackageManagers().ArePluginsAvailable();
+        return CheckBasicRequirements(ignoreCommands: true)
+               && GetSupportedPackageManagers().ArePluginsAvailable();
     }
 
     public override bool IsPackageUriSupported(PackageUri packageUri)
@@ -107,10 +103,10 @@ public class PackageManagerPluginLinuxSnap: PluginBaseClass
     private PluginManager GetSupportedPackageManagers()
     {
         _pluginManagerInstance ??= new PluginManager(new[] {
-            "pacman",
-            "apt",
-            "dnf",
-            "yum",
+            "Pacman",
+            "Apt",
+            "Dnf",
+            "Yum",
         });
         return _pluginManagerInstance;
     }
